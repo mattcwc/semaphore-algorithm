@@ -25,7 +25,8 @@ class MailboxHandler:
 
     def send_data(self, letters, magazines, newspapers, parcels):
         from util.firebase_util import put_delivery
-        return put_delivery(self.db_url, self.email, self.secret, self.mailbox_id,
+        return put_delivery(self.db_url, self.email, self.secret,
+                            self.mailbox_id,
                             letters, magazines, newspapers, parcels)
 
     def take_image(self, image_path):
