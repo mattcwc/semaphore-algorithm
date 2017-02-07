@@ -1,7 +1,7 @@
 from json import load, dumps
 from os.path import isfile
 from subprocess import call
-from util.firebase_util import put_delivery
+from util.firebase_util import put_data
 
 
 class MailboxHandler:
@@ -30,12 +30,12 @@ class MailboxHandler:
             _txt_file.close()
 
     def send_data(self, letters, magazines, newspapers, parcels):
-        return put_delivery(self.db_url, self._email, self._secret,
-                            self._mailbox_id,
-                            letters, magazines, newspapers, parcels)
+        return put_data(self.db_url, self._email, self._secret,
+                        self._mailbox_id, 'deliveries', None,
+                        letters, magazines, newspapers, parcels)
 
-    def take_image(self, image_path):
-        call(['raspistill', '-o', '{}.jpg'.format(image_path)])
+    def take_image(self, img_path):
+        call(['raspistill', '-o', '{}.jpg'.format(img_path)])
 
-    def process_image(self, image_path):
+    def process_image(self, img):
         pass
