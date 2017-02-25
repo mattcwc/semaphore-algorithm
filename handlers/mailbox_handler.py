@@ -1,7 +1,10 @@
 from json import load, dumps
 from os.path import isfile
 from subprocess import call
+import numpy as np
 from util.firebase_util import put_data
+from util.img_util import get_all_edges, convert_adjacency_list, decode_vertex
+from util.math_func import matrix_min, cycle_finder, area_in_cycle
 
 
 class MailboxHandler:
@@ -34,8 +37,24 @@ class MailboxHandler:
                         self._mailbox_id, 'deliveries', None,
                         letters, magazines, newspapers, parcels)
 
-    def take_image(self, img_path):
+    @staticmethod
+    def take_image(img_path):
         call(['raspistill', '-o', '{}.jpg'.format(img_path)])
 
-    def process_image(self, img):
-        pass
+    @staticmethod
+    def process_image(img):
+        edges = get_all_edges(img)
+        minned = matrix_min(edges.values())
+
+        # cutoff pixels based on non-zero median
+        cutoff = np.nanmedian(
+            np.nanmedian(np.where(minned != 0, minned, np.NaN)))
+        minned[minned < cutoff] = 0
+        graph = convert_adjacency_list(minned)  # Also encodes vertices
+        cycles = cycle_finder(*graph)
+
+        # Decoding vertices and getting areas
+        areas = []
+        for c in cycles:
+            cycle = [decode_vertex(v) for v in c]
+            areas.append(area_in_cycle(cycle))
