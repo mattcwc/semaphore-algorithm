@@ -45,10 +45,14 @@ def cycle_finder(vertices, edges):
     cycles = []
     visited = set()
     visited_edges = []
-    for vertex in vertices:
+    for v, vertex in enumerate(vertices):
         if vertex not in visited:
-            path, used_edges = find_cycle_recursive([vertex], edges,
-                                                    visited_edges)
+            cycle_id_pairs, used_edges, path = [], [], [vertex]
+            iter_dfs_explore(path, edges, cycle_id_pairs, used_edges)
+            for start, end in cycle_id_pairs:
+                cycle_path = path[start:end]
+                cycle_path.append(path[start])
+                cycles.append(cycle_path)
             if used_edges is not None:
                 visited_edges.extend(used_edges)
             if path is not None:
@@ -57,20 +61,39 @@ def cycle_finder(vertices, edges):
     return cycles
 
 
-def find_cycle_recursive(path, edges, used_edges):
-    start_vertex = path[-1]
+def dfs_explore(path, edges, cycle_idx_pairs, used_edges):
+    curr_vertex = path[-1]
     for edge in edges:
-        if start_vertex in edge and edge not in used_edges:
+        if curr_vertex in edge and edge not in used_edges:
             v1, v2 = edge
-            next_vertex = v2 if v1 == start_vertex else v1
-            if len(path) > 2 and next_vertex == path[0]:
-                # Cycle found
-                n = path.index(min(path))
-                path = path[n:] + path[:n]
-                used_edges.append(edge)
-                return path, used_edges
+            next_vertex = v2 if v1 == curr_vertex else v1
+            used_edges.append(edge)  # Don't re-use the edge
+            if len(path) > 2 and next_vertex in path:
+                # Cycle is found, record the vertices
+                start_vertex = path.index(next_vertex)
+                end_vertex = len(path)
+                cycle_idx_pairs.append((start_vertex, end_vertex))
             if next_vertex not in path:
+                # Add and keep searching
                 path.append(next_vertex)
-                used_edges.append(edge)
-                return find_cycle_recursive(path, edges, used_edges)
-    return None, None
+                dfs_explore(path, edges, cycle_idx_pairs, used_edges)
+
+
+def iter_dfs_explore(path, edges, cycle_idx_pairs, used_edges):
+    stack = [path[-1]]
+    while len(stack) > 0:
+        curr_vertex = stack.pop()
+        for edge in edges:
+            if curr_vertex in edge and edge not in used_edges:
+                v1, v2 = edge
+                next_vertex = v2 if v1 == curr_vertex else v1
+                used_edges.append(edge)  # Don't re-use the edge
+                if len(path) > 2 and next_vertex in path:
+                    # Cycle is found, record the vertices
+                    start_vertex = path.index(next_vertex)
+                    end_vertex = len(path)
+                    cycle_idx_pairs.append((start_vertex, end_vertex))
+                if next_vertex not in path:
+                    # Add and keep searching
+                    path.append(next_vertex)
+                    stack.append(next_vertex)
