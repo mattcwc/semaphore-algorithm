@@ -1,5 +1,4 @@
-from util.math_func import matrix_min, area_in_cycle
-from util.server_util import time_run
+from image_algorithm.util.math_func import matrix_min, area_in_cycle
 from copy import deepcopy
 import numpy as np
 import pandas as pd
@@ -159,7 +158,6 @@ def cycle_traverse(df, row, col):
     return paths, cycles, prev_map
 
 
-@time_run
 def find_all_cycles(matrix):
     df = pd.DataFrame(matrix)
     rows, cols = matrix.shape
@@ -176,7 +174,6 @@ def find_all_cycles(matrix):
     return all_paths, all_cycles
 
 
-@time_run
 def get_areas(all_paths, all_cycles):
     areas = []
     for p, c in zip(all_paths, all_cycles):  # O(len(all_paths))

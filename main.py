@@ -8,9 +8,11 @@ import pandas as pd
 
 def run_algorithm(img, empty):
     empty_edges = get_all_edges(empty)
-    img_edges = get_all_edges(imread(img, as_grey=True) - imread(empty, as_grey=True))
+    #img_edges = get_all_edges(imread(img, as_grey=True) - imread(empty, as_grey=True))
     # minned = matrix_min(img_edges.values()) - matrix_min(empty_edges.values())
-    minned = matrix_min(img_edges.values())
+    img_edges = get_all_edges(img)
+    minned = matrix_min(img_edges.values()) - matrix_min(empty_edges.values())
+    # minned = matrix_min(img_edges.values())
     minned[minned < 0] = 0
 
     # cutoff pixels based on non-zero median
@@ -25,7 +27,7 @@ def run_algorithm(img, empty):
     all_paths, all_cycles = find_all_cycles(minned)
     areas = pd.Series(get_areas(all_paths, all_cycles))
     return get_objects(areas)
-
-
-if __name__ == '__main__':
-    run_algorithm('/home/derp/pic.jpg', '/home/derp/empty.jpg')
+#
+#
+# if __name__ == '__main__':
+#     run_algorithm('/home/derp/pic.jpg', '/home/derp/empty.jpg')

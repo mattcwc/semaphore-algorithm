@@ -1,5 +1,4 @@
 from itertools import tee
-from util.server_util import time_run
 
 
 def matrix_min(matrices):
@@ -30,7 +29,6 @@ def area_in_cycle(cycle):
     return abs(parts / 2)
 
 
-@time_run
 def cycle_finder(vertices, edges):
     """
 
