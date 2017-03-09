@@ -5,7 +5,6 @@ import pandas as pd
 from itertools import product
 from skimage.io import imread
 from skimage.filters import roberts, sobel, scharr, prewitt
-from matplotlib import pyplot as plt
 from scipy import ndimage
 
 max_x, max_y = 479, 639
@@ -50,17 +49,17 @@ def get_all_edges(img, plot=False):
     edges = {}
     for i, m in enumerate(EDGE_METHODS.keys()):
         edges[m] = get_edges(img, m)
-    if plot:
-        fig, ax = plt.subplots(1, 4)
-        fontdict = {'size': 30, 'name': 'Times New Roman'}
-        ax[0].set_xlabel('a. Roberts', fontdict)
-        ax[0].imshow(edges['roberts'], cmap=plt.cm.gray)
-        ax[1].set_xlabel('b. Sobel', fontdict)
-        ax[1].imshow(edges['sobel'], cmap=plt.cm.gray)
-        ax[2].set_xlabel('c. Scharr', fontdict)
-        ax[2].imshow(edges['scharr'], cmap=plt.cm.gray)
-        ax[3].set_xlabel('d. Prewitt', fontdict)
-        ax[3].imshow(edges['prewitt'], cmap=plt.cm.gray)
+    # if plot:
+    #     fig, ax = plt.subplots(1, 4)
+    #     fontdict = {'size': 30, 'name': 'Times New Roman'}
+    #     ax[0].set_xlabel('a. Roberts', fontdict)
+    #     ax[0].imshow(edges['roberts'], cmap=plt.cm.gray)
+    #     ax[1].set_xlabel('b. Sobel', fontdict)
+    #     ax[1].imshow(edges['sobel'], cmap=plt.cm.gray)
+    #     ax[2].set_xlabel('c. Scharr', fontdict)
+    #     ax[2].imshow(edges['scharr'], cmap=plt.cm.gray)
+    #     ax[3].set_xlabel('d. Prewitt', fontdict)
+    #     ax[3].imshow(edges['prewitt'], cmap=plt.cm.gray)
     return edges
 
 
