@@ -7,8 +7,9 @@ from itertools import product
 from skimage.io import imread
 from skimage.filters import roberts, sobel, scharr, prewitt
 from matplotlib import pyplot as plt
+from scipy import ndimage
 
-max_x, max_y = 640, 480
+max_x, max_y = 479, 639
 
 EDGE_METHODS = {'roberts': roberts,
                 'sobel': sobel,
@@ -220,15 +221,44 @@ def get_areas(all_paths, all_cycles):
     return areas
 
 
-def run_full_algorithm(img='d:/pictures/fydp/q30_640x480.jpg'):
-    edges = get_all_edges(img)
-    minned = matrix_min(edges.values())
+def check_empty(matrix):
+    for row in matrix:
+        for x in row:
+            if x > 0.15:
+                return False
+    return True
+
+
+def run_full_algorithm(img='d:/pictures/fydp/nudes/bwcleanbox.jpg'):
+    """
+
+    :param img:
+    :return:
+    :usage:
+        >>> img = 'd:/pictures/fydp/nudes/3letter.jpg'
+    """
+    empty = 'd:/pictures/fydp/nudes/bwempty1.jpg'
+    empty_edges = get_all_edges(empty)
+    img_edges = get_all_edges(img)
+    # tmp = imread(img, as_grey=True) - imread(empty, as_grey=True)
+    # img_edges = get_all_edges(tmp)
+    minned = matrix_min(img_edges.values()) - matrix_min(empty_edges.values())
+    if check_empty(minned):
+        pass
+    minned[minned < 0] = 0
+    # minned = matrix_min(edges.values())
 
     # cutoff pixels based on non-zero median
-    cutoff = np.nanmedian(np.nanmedian(np.where(minned != 0, minned, np.NaN)))
-    minned[minned < cutoff] = 0
+    cutoff = 0
+    minned = ndimage.median_filter(minned, 4)
+    for x in range(3):
+        cutoff = np.nanmedian(np.nanmedian(np.where(minned != 0,
+                                                    minned,
+                                                    np.NaN)))
+        minned[minned < cutoff] = 0
+    minned[minned >= cutoff] = 1
     all_paths, all_cycles = find_all_cycles(minned)
-    areas = get_areas(all_paths, all_cycles)
+    areas = pd.Series(get_areas(all_paths, all_cycles))
     # graph = convert_adjacency_list(minned)  # Also encodes vertices
     # cycles = cycle_finder(*graph)
 
