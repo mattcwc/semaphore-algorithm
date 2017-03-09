@@ -8,15 +8,16 @@ def get_membership_functions():
     n = pd.Series(0.0, index=area, name='newspapers')
     m = pd.Series(0.0, index=area, name='magazines')
     p = pd.Series(0.0, index=area, name='parcels')
-    l[500:2000] = (l[500:2000].index - 500)/2000
-    l[2000:3000] = (3000 - l[2000:3000].index)/2000
-    p[20000: 50000] = (p[20000: 50000].index - 20000)/50000
-    p[50000: 100000] = (100000 - p[50000: 100000].index)/50000
+    l[500:2000] = (l[500:2000].index - 500) / 2000
+    l[2000:3000] = (3000 - l[2000:3000].index) / 2000
+    p[20000: 50000] = (p[20000: 50000].index - 20000) / 50000
+    p[50000: 100000] = (100000 - p[50000: 100000].index) / 50000
     return pd.DataFrame([l, n, m, p]).transpose()
 
 
 def find_objects(areas, threshold=30):
     """
+    May potentially work, but needs re-working
     >>> object_areas = find_objects(areas)
     >>> get_objects(object_areas)
     :param areas:
@@ -54,4 +55,8 @@ def get_objects(object_areas):
         item = determine_object(area, mf)
         if item is not None:
             object_dict[item] += 1
+    for k in object_dict.keys():
+        object_dict[k] = int(round(float(object_dict[k]) / 40))
+    while object_dict['letters'] > 20:
+        object_dict['letters'] = int(round(float(object_dict['letters']) / 20))
     return object_dict

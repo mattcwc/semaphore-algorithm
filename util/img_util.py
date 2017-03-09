@@ -111,38 +111,6 @@ def decode_vertex(number):
     return row, col
 
 
-# def adjacent_vertices(row, col):
-#     # Only 2 because shoddy attempt at makign it underected
-#     vertices = [(min(row + 1, max_x), col),
-#                 (row, min(col + 1, max_y))]
-#     return np.array(vertices)
-#
-#
-# def single_convert(df, row, col):
-#     if df.iloc[row, col] != 0:
-#         vertex = encode_vertex(row, col)
-#         edges = []
-#         for adj_r, adj_c in adjacent_vertices(row, col):
-#             v = encode_vertex(adj_r, adj_c)
-#             if df.iloc[adj_r, adj_c] != 0:
-#                 edges.append((vertex, v))
-#         return vertex, edges
-#     return None, None
-#
-#
-# @time_run
-# def convert_adjacency_list(matrix):
-#     vertices, adj_edges = [], []
-#     tmp = pd.DataFrame(matrix)
-#     rows, cols = matrix.shape
-#     for r, c in product(list(range(rows)), list(range(cols))):
-#         vertex, edges = single_convert(tmp, r, c)
-#         if vertex is not None:
-#             vertices.append(vertex)
-#             adj_edges.extend(edges)
-#     return vertices, adj_edges
-
-
 def neighbours(row, col):
     vertices = [encode_vertex(min(row + 1, max_x), col),
                 encode_vertex(max(0, row - 1), col),
@@ -235,9 +203,10 @@ def run_full_algorithm(img='d:/pictures/fydp/nudes/bwcleanbox.jpg'):
     :param img:
     :return:
     :usage:
-        >>> img = 'd:/pictures/fydp/nudes/3letter.jpg'
+        >>> img = 'd:/pictures/fydp/nudes2/2.jpg'
+        >>> fig, ax = plt.subplots(); ax.imshow(minned, cmap=plt.cm.gray)
     """
-    empty = 'd:/pictures/fydp/nudes/bwempty1.jpg'
+    empty = 'd:/pictures/fydp/nudes1/image1.jpg'
     empty_edges = get_all_edges(empty)
     img_edges = get_all_edges(img)
     # tmp = imread(img, as_grey=True) - imread(empty, as_grey=True)
@@ -259,6 +228,4 @@ def run_full_algorithm(img='d:/pictures/fydp/nudes/bwcleanbox.jpg'):
     minned[minned >= cutoff] = 1
     all_paths, all_cycles = find_all_cycles(minned)
     areas = pd.Series(get_areas(all_paths, all_cycles))
-    # graph = convert_adjacency_list(minned)  # Also encodes vertices
-    # cycles = cycle_finder(*graph)
 
