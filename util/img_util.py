@@ -1,4 +1,4 @@
-from image_algorithm.util.math_func import matrix_min, area_in_cycle
+from util.math_func import matrix_min, area_in_cycle
 from copy import deepcopy
 import numpy as np
 import pandas as pd
@@ -8,7 +8,7 @@ from skimage.filters import roberts, sobel, scharr, prewitt
 from matplotlib import pyplot as plt
 from scipy import ndimage
 
-max_x, max_y = 479, 639
+max_x, max_y = 480, 640
 
 EDGE_METHODS = {'roberts': roberts,
                 'sobel': sobel,
@@ -51,16 +51,24 @@ def get_all_edges(img, plot=False):
     for i, m in enumerate(EDGE_METHODS.keys()):
         edges[m] = get_edges(img, m)
     if plot:
-        fig, ax = plt.subplots(1, 4)
+        # fig, ax = plt.subplots(1, 4)
         fontdict = {'size': 30, 'name': 'Times New Roman'}
-        ax[0].set_xlabel('a. Roberts', fontdict)
-        ax[0].imshow(edges['roberts'], cmap=plt.cm.gray)
-        ax[1].set_xlabel('b. Sobel', fontdict)
-        ax[1].imshow(edges['sobel'], cmap=plt.cm.gray)
-        ax[2].set_xlabel('c. Scharr', fontdict)
-        ax[2].imshow(edges['scharr'], cmap=plt.cm.gray)
-        ax[3].set_xlabel('d. Prewitt', fontdict)
-        ax[3].imshow(edges['prewitt'], cmap=plt.cm.gray)
+        # ax[0].set_xlabel('a. Roberts', fontdict)
+        fig, ax = plt.subplots()
+        ax.imshow(edges['roberts'], cmap=plt.cm.gray)
+        # ax[0].imshow(edges['roberts'], cmap=plt.cm.gray)
+        # ax[1].set_xlabel('b. Sobel', fontdict)
+        fig, ax = plt.subplots()
+        ax.imshow(edges['sobel'], cmap=plt.cm.gray)
+        # ax[1].imshow(edges['sobel'], cmap=plt.cm.gray)
+        # ax[2].set_xlabel('c. Scharr', fontdict)
+        fig, ax = plt.subplots()
+        ax.imshow(edges['scharr'], cmap=plt.cm.gray)
+        # ax[2].imshow(edges['scharr'], cmap=plt.cm.gray)
+        # ax[3].set_xlabel('d. Prewitt', fontdict)
+        fig, ax = plt.subplots()
+        ax.imshow(edges['prewitt'], cmap=plt.cm.gray)
+        # ax[3].imshow(edges['prewitt'], cmap=plt.cm.gray)
     return edges
 
 
@@ -111,11 +119,36 @@ def decode_vertex(number):
 
 
 def neighbours(row, col):
-    vertices = [encode_vertex(min(row + 1, max_x), col),
+    vertices = [encode_vertex(min(row + 1, max_x - 1), col),
                 encode_vertex(max(0, row - 1), col),
-                encode_vertex(row, min(col + 1, max_y)),
+                encode_vertex(row, min(col + 1, max_y - 1)),
                 encode_vertex(row, max(0, col - 1))]
     return vertices
+
+
+def single_sweep(row, col, srange):
+    vertices = [encode_vertex(min(row + srange, max_x - 1),
+                              min(col + srange, max_y - 1)),
+                encode_vertex(max(0, row - srange),
+                              max(0, col - srange)),
+                encode_vertex(max(0, row - srange),
+                              min(col + srange, max_y - 1)),
+                encode_vertex(min(row + srange, max_x - 1),
+                              max(0, col - srange)),
+                encode_vertex(min(row + srange, max_x - 1), col),
+                encode_vertex(max(0, row - srange), col),
+                encode_vertex(row, min(col + srange, max_y - 1)),
+                encode_vertex(row, max(0, col - srange))]
+    return vertices
+
+
+def expand_search_range(vertex, sweep_range=2):
+    adjacent = []
+    row, col = decode_vertex(vertex)
+    for i in range(sweep_range):
+        sweep = single_sweep(row, col, i + 1)
+        adjacent.extend(sweep)
+    return adjacent
 
 
 def cycle_traverse(df, row, col):
@@ -127,7 +160,7 @@ def cycle_traverse(df, row, col):
     while len(stack) > 0:
         r, c = stack.pop()
         cur = encode_vertex(r, c)  # O(1)
-        adj = neighbours(r, c)  # O(4) = O(1)
+        adj = expand_search_range(cur, sweep_range=7)  # O(8) = O(1)
         prev = path[-1] if len(path) > 1 else -1  # O(1)
         if prev > 0 and prev not in adj:  # Total O(n) worst case
             # Save the old cycles
@@ -153,6 +186,7 @@ def cycle_traverse(df, row, col):
                 if cycle_map.get(n_idx, None) is None:  # O(1)
                     cycle_map[n_idx] = []
                 cycle_map[n_idx].append(c_idx)  # O(n)
+            break  # Super hacky, uses fact sweeper starts closest
         path.append(cur)
         path_checker[cur] = 0
     return paths, cycles, prev_map
@@ -209,8 +243,6 @@ def run_full_algorithm(img='d:/pictures/fydp/nudes/bwcleanbox.jpg'):
     # tmp = imread(img, as_grey=True) - imread(empty, as_grey=True)
     # img_edges = get_all_edges(tmp)
     minned = matrix_min(img_edges.values()) - matrix_min(empty_edges.values())
-    if check_empty(minned):
-        pass
     minned[minned < 0] = 0
     # minned = matrix_min(edges.values())
 
@@ -225,4 +257,3 @@ def run_full_algorithm(img='d:/pictures/fydp/nudes/bwcleanbox.jpg'):
     minned[minned >= cutoff] = 1
     all_paths, all_cycles = find_all_cycles(minned)
     areas = pd.Series(get_areas(all_paths, all_cycles))
-

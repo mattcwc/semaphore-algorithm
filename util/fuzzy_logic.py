@@ -8,10 +8,10 @@ def get_membership_functions():
     n = pd.Series(0.0, index=area, name='newspapers')
     m = pd.Series(0.0, index=area, name='magazines')
     p = pd.Series(0.0, index=area, name='parcels')
-    l[500:2000] = (l[500:2000].index - 500) / 2000
-    l[2000:3000] = (3000 - l[2000:3000].index) / 2000
-    p[20000: 50000] = (p[20000: 50000].index - 20000) / 50000
-    p[50000: 100000] = (100000 - p[50000: 100000].index) / 50000
+    l[1000:3000] = (l[1000:3000].index - 1000) / 3000
+    l[3000:5000] = (5000 - l[3000:5000].index) / 3000
+    p[6000: 8000] = (p[6000: 8000].index - 6000) / 8000
+    p[8000: 10000] = (10000 - p[8000: 10000].index) / 8000
     return pd.DataFrame([l, n, m, p]).transpose()
 
 
@@ -26,7 +26,7 @@ def find_objects(areas, threshold=30):
     """
     if not isinstance(areas, pd.Series):
         areas = pd.Series(areas)
-    areas = areas.sort(inplace=False)
+    areas = areas.sort_values(inplace=False)
     p_area = None
     object_areas = []
     for a, area in areas.iteritems():
@@ -40,9 +40,7 @@ def determine_object(area, mf=None):
     if mf is None:
         mf = get_membership_functions()
     slice = mf.iloc[area]
-    if all(slice == 0):
-        return None
-    return slice.idxmax()
+    return slice.idxmax() if any(slice > 0) else None
 
 
 def get_objects(object_areas):
@@ -57,6 +55,5 @@ def get_objects(object_areas):
             object_dict[item] += 1
     for k in object_dict.keys():
         object_dict[k] = int(round(float(object_dict[k]) / 40))
-    while object_dict['letters'] > 20:
-        object_dict['letters'] = int(round(float(object_dict['letters']) / 20))
+    object_dict['letters'] /= 2
     return object_dict
