@@ -40,7 +40,7 @@ def get_all_edges(img, plot=False):
     :return:
     :usage:
         >>> img = 'd:/pictures/fydp/q30_640x480.jpg'
-        >>> edges = get_all_edges(img, plot=True)
+        >>> edges = get_all_edges(img)
         >>> minned = matrix_min(edges.values())
         >>> fig, ax = plt.subplots(); ax.imshow(minned, cmap=plt.cm.gray)
     """

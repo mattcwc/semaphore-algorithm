@@ -11,7 +11,7 @@ def find_straight_lines(img, plot=False):
     :return:
     :usage:
         >>> img = 'd:/pictures/fydp/nudes3/3l_covered.jpg'
-        >>> line_segments = find_straight_lines(img, plot=True)
+        >>> line_segments = find_straight_lines(img)
     """
     if isinstance(img, str):
         img = cv2.imread(img)
@@ -142,7 +142,7 @@ def bresenham_line_algorithm(line_segments):
     :return:
     :usage:
         >>> img = 'd:/pictures/fydp/nudes3/1b3l_covered.jpg'
-        >>> line_segments = find_straight_lines(img, plot=True)
+        >>> line_segments = find_straight_lines(img)
         >>> matrix = bresenham_line_algorithm(line_segments)
         >>> import matplotlib.pyplot as plt
         >>> plt.imshow(matrix, cmap=plt.cm.gray)

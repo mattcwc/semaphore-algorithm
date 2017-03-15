@@ -21,7 +21,7 @@ def run_algorithm(img, empty):
         >>> empty = 'd:/pictures/fydp/nudes3/empty_covered.jpg'
         >>> run_algorithm(img, empty)
     """
-    img_ls = find_straight_lines(img, plot=True)
+    img_ls = find_straight_lines(img)
     # empty_ls = find_straight_lines(empty)
     # empty_matrix = bresenham_line_algorithm(empty_ls)
     # matrix = bresenham_line_algorithm(img_ls) - empty_matrix
