@@ -1,7 +1,7 @@
-from util.img_util import get_all_edges, find_all_cycles, get_areas
-from util.math_func import matrix_min
-from util.fuzzy_logic import get_objects, find_objects
-from scipy import ndimage
+from image_algorithm.util.img_util import get_all_edges, find_all_cycles, get_areas
+# from image_algorithm.util.math_func import matrix_min
+from image_algorithm.util.fuzzy_logic import get_objects, find_objects
+# from scipy import ndimage
 import numpy as np
 import pandas as pd
 

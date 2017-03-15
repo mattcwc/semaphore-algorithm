@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-from util.img_util import encode_vertex, max_x, max_y, expand_search_range
+from image_algorithm.util.img_util import encode_vertex, max_x, max_y, expand_search_range
 
 
 def find_straight_lines(img, plot=False):

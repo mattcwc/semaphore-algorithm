@@ -1,4 +1,4 @@
-from util.math_func import matrix_min, area_in_cycle
+from image_algorithm.util.math_func import matrix_min, area_in_cycle
 from copy import deepcopy
 import numpy as np
 import pandas as pd
