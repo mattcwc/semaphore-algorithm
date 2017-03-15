@@ -55,5 +55,9 @@ def get_objects(object_areas):
             object_dict[item] += 1
     for k in object_dict.keys():
         object_dict[k] = int(round(float(object_dict[k]) / 40))
+        while object_dict[k] > 20:
+            object_dict[k] = int(round(float(object_dict[k]) / 20))
     object_dict['letters'] /= 2
+    if object_dict['parcels'] > 2:
+        object_dict['parcels'] = 0
     return object_dict

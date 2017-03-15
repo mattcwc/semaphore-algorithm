@@ -184,7 +184,6 @@ def cycle_traverse(start_vertex, edges):
     path, path_checker = [], {}  # currently traversing path
     cycle_map = {}  # Cycles in current path
     paths, cycles, prev_map = [], [], {}  # Returned variables
-    v1_idx = 0
     while stack:  # Stack is not empty
         v1 = stack.pop()
         adjacent = expand_search_range(edges.get(v1, None), sweep_range=50)
@@ -192,13 +191,13 @@ def cycle_traverse(start_vertex, edges):
         if prev > 0 and prev not in adjacent:
             # The previous path is finished and we continue to the next one
             # Save the paths and cycles if there are cycles, and refresh
-            v1_idx = len(path) + 1
             if cycle_map:
                 paths.append(path)
                 cycles.append(cycle_map)
             path = path[:path.index(prev) + 1]
             path_checker = {k: i for i, k in enumerate(path)}
             cycle_map = {}
+        v1_idx = len(path)
         for v2 in adjacent:
             if v2 == prev:  # Ignore the vertex going back
                 continue

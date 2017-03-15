@@ -17,7 +17,7 @@ def run_algorithm(img, empty):
     :return:
         >>> img = 'd:/pictures/fydp/nudes4/2letters.jpg'
         >>> empty = 'd:/pictures/fydp/nudes4/black_empty.jpg'
-        >>> img = 'd:/pictures/fydp/nudes3/3l_covered.jpg'
+        >>> img = 'd:/pictures/fydp/nudes5/3l.jpg'
         >>> empty = 'd:/pictures/fydp/nudes3/empty_covered.jpg'
         >>> run_algorithm(img, empty)
     """
