@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 
@@ -16,14 +17,6 @@ def get_membership_functions():
 
 
 def find_objects(areas, threshold=30):
-    """
-    May potentially work, but needs re-working
-    >>> object_areas = find_objects(areas)
-    >>> get_objects(object_areas)
-    :param areas:
-    :param threshold:
-    :return:
-    """
     if not isinstance(areas, pd.Series):
         areas = pd.Series(areas)
     areas = areas.sort_values(inplace=False)
@@ -55,4 +48,17 @@ def get_objects(object_areas):
         item = determine_object(area, mf)
         if item is not None:
             object_dict[item] += 1
+
+    # Pseudo-normalization of result
+    div = np.mean(object_dict.values())
+    if div > 1:  # Don't want to increase the number of items
+        object_dict = {k: int(np.floor(v / div)) for k, v in
+                       object_dict.iteritems()}
+
+    # Check if it's only letters that have values. Empirical tests show that
+    # mailboxes with only letters tend to produce more. Quick hack to try and
+    # make it a little closer
+    i = iter(object_dict.values())
+    if any(i) and not any(i) and object_dict.get('letters') > 0:
+        object_dict['letters'] /= 2
     return object_dict

@@ -50,10 +50,10 @@ def get_all_edges(img, plot=False):
     edges = {}
     for i, m in enumerate(EDGE_METHODS.keys()):
         edges[m] = get_edges(img, m)
-    # if plot:
-    #     import matplotlib.pyplot as plt
-    #     fig, ax = plt.subplots()
-    #     ax.imshow(edges['canny'], cmap=plt.cm.gray)
+    if plot:
+        import matplotlib.pyplot as plt
+        fig, ax = plt.subplots()
+        ax.imshow(edges['canny'], cmap=plt.cm.gray)
     return edges
 
 

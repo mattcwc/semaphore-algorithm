@@ -1,9 +1,10 @@
 from image_algorithm.util.img_util import get_areas, get_all_edges, \
     find_all_cycles
 from image_algorithm.util.fuzzy_logic import get_objects, find_objects
+import numpy as np
 import pandas as pd
 
-from util.cv2_util import find_straight_lines, convert_graph, find_cycles, \
+from image_algorithm.util.cv2_util import find_straight_lines, convert_graph, find_cycles, \
     read_image, remove_background, mask_shapes
 
 
@@ -37,22 +38,28 @@ def run_algorithm_old(img, e1, e2):
     return get_objects(object_areas)
 
 
-def run_algorithm(img, empty):
+def run_algorithm(img, empty, plot=False):
     """
 
     :param img:
     :param empty: Placeholder variable so that server doesn't need to change
     :return:
     :usage:
-        >>> img = 'd:/google drive/fydp/images/1l_r2l_2.jpg'
+        >>> img = 'd:/google drive/fydp/images/3l_r1l1b.jpg'
         >>> run_algorithm(img, None)
     """
     # Find objects
     img = read_image(img, True)
-    contour = mask_shapes(img, True)
+    contour = mask_shapes(img)
     tmp = contour.astype(int) - img.astype(int)
     tmp[tmp < 0] = 0
     tmp = tmp.astype('uint8')
+
+    if plot:
+        import cv2
+        cv2.namedWindow('tmp', 1)
+        cv2.imshow('tmp', tmp)
+
     edges = get_all_edges(tmp)
     single = edges.get('canny')
 
@@ -62,15 +69,38 @@ def run_algorithm(img, empty):
     object_areas = find_objects(areas)
     object_dict = get_objects(object_areas)
 
-    # Pseudo-normalization of result
-    div = float(sum(object_dict.values())) / 2  # only supports 2 items for now
-    if div > 1:  # Don't want to increase the number of items
-        object_dict = {k: int(round(v / div)) for k, v in
-                       object_dict.iteritems()}
-
-    # Check if it's only letters that have values. Empirical tests show that
-    # mailboxes with only letters tend to produce double the amount.
-    i = iter(object_dict.values())
-    if any(i) and not any(i) and object_dict.get('letters') > 0:
-        object_dict['letters'] /= 2
     return object_dict
+
+
+def algorithm_test_multiple(images):
+    """
+
+    :param images:
+    :return:
+
+    """
+    ret = {}
+    for img in images:
+        print 'image: {}'.format(img)
+        object_dict = run_algorithm(img, None)
+        ret[img] = object_dict
+        print 'objects: {}'.format(object_dict)
+    return ret
+
+
+def algorithm_test(folder_path):
+    """
+
+    :param folder_path:
+    :return:
+    :usage:
+        >>> folder_path = 'd:/google drive/fydp/images/letters_only/'
+        >>> algorithm_test(folder_path)
+    """
+    from os import listdir, path
+    images = []
+    for f in listdir(folder_path):
+        if f.endswith('.jpg'):
+            img = path.join(folder_path, f)
+            images.append(img)
+    return algorithm_test_multiple(images)
