@@ -8,10 +8,10 @@ def get_membership_functions():
     n = pd.Series(0.0, index=area, name='newspapers')
     m = pd.Series(0.0, index=area, name='magazines')
     p = pd.Series(0.0, index=area, name='parcels')
-    l[1000:3000] = (l[1000:3000].index - 1000) / 3000
-    l[3000:5000] = (5000 - l[3000:5000].index) / 3000
-    p[6000: 8000] = (p[6000: 8000].index - 6000) / 8000
-    p[8000: 10000] = (10000 - p[8000: 10000].index) / 8000
+    l[800:7000] = (l[800:7000].index - 800) / 7000
+    l[7000:12000] = (12000 - l[7000:12000].index) / 7000
+    p[45000: 140000] = (p[45000: 140000].index - 45000) / 140000
+    p[140000: 200000] = (200000 - p[140000: 200000].index) / 140000
     return pd.DataFrame([l, n, m, p]).transpose()
 
 
@@ -50,14 +50,9 @@ def get_objects(object_areas):
                    'magazines': 0,
                    'parcels': 0}
     for area in object_areas:
+        if area >= len(mf):
+            continue
         item = determine_object(area, mf)
         if item is not None:
             object_dict[item] += 1
-    for k in object_dict.keys():
-        object_dict[k] = int(round(float(object_dict[k]) / 40))
-        while object_dict[k] > 20:
-            object_dict[k] = int(round(float(object_dict[k]) / 20))
-    object_dict['letters'] /= 2
-    if object_dict['parcels'] > 2:
-        object_dict['parcels'] = 0
     return object_dict

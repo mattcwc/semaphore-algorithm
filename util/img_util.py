@@ -5,6 +5,7 @@ import pandas as pd
 from itertools import product
 from skimage.io import imread
 from skimage.filters import roberts, sobel, scharr, prewitt
+from skimage.feature import canny
 from scipy import ndimage
 
 max_x, max_y = 480, 640
@@ -12,7 +13,7 @@ max_x, max_y = 480, 640
 EDGE_METHODS = {'roberts': roberts,
                 'sobel': sobel,
                 'scharr': scharr,
-                # 'canny': canny,
+                'canny': canny,
                 'prewitt': prewitt}
 
 
@@ -50,16 +51,9 @@ def get_all_edges(img, plot=False):
     for i, m in enumerate(EDGE_METHODS.keys()):
         edges[m] = get_edges(img, m)
     # if plot:
-    #     fig, ax = plt.subplots(1, 4)
-    #     fontdict = {'size': 30, 'name': 'Times New Roman'}
-    #     ax[0].set_xlabel('a. Roberts', fontdict)
-    #     ax[0].imshow(edges['roberts'], cmap=plt.cm.gray)
-    #     ax[1].set_xlabel('b. Sobel', fontdict)
-    #     ax[1].imshow(edges['sobel'], cmap=plt.cm.gray)
-    #     ax[2].set_xlabel('c. Scharr', fontdict)
-    #     ax[2].imshow(edges['scharr'], cmap=plt.cm.gray)
-    #     ax[3].set_xlabel('d. Prewitt', fontdict)
-    #     ax[3].imshow(edges['prewitt'], cmap=plt.cm.gray)
+    #     import matplotlib.pyplot as plt
+    #     fig, ax = plt.subplots()
+    #     ax.imshow(edges['canny'], cmap=plt.cm.gray)
     return edges
 
 
@@ -151,7 +145,7 @@ def cycle_traverse(df, row, col):
     while len(stack) > 0:
         r, c = stack.pop()
         cur = encode_vertex(r, c)  # O(1)
-        adj = expand_search_range(cur, sweep_range=7)  # O(8) = O(1)
+        adj = expand_search_range(cur, sweep_range=5)  # O(8) = O(1)
         prev = path[-1] if len(path) > 1 else -1  # O(1)
         if prev > 0 and prev not in adj:  # Total O(n) worst case
             # Save the old cycles
@@ -177,13 +171,24 @@ def cycle_traverse(df, row, col):
                 if cycle_map.get(n_idx, None) is None:  # O(1)
                     cycle_map[n_idx] = []
                 cycle_map[n_idx].append(c_idx)  # O(n)
-            break  # Super hacky, uses fact sweeper starts closest
         path.append(cur)
         path_checker[cur] = 0
     return paths, cycles, prev_map
 
 
 def find_all_cycles(matrix):
+    """
+
+    :param matrix:
+    :return:
+        >>> from util.cv2_util import read_image, mask_shapes
+        >>> img = 'd:/google drive/fydp/images/1box_1letter = 2 letters .jpg'
+        >>> img = read_image(img, True)
+        >>> shape_mask = mask_shapes(img)
+        >>> edges = get_all_edges(shape_mask, True)
+        >>> matrix = edges.get('sobel')
+        >>> all_paths, all_cycles = find_all_cycles(matrix)
+    """
     df = pd.DataFrame(matrix)
     rows, cols = matrix.shape
     all_paths = []
@@ -197,6 +202,14 @@ def find_all_cycles(matrix):
             all_cycles.extend(cycles)
             ignore.update(visited)
     return all_paths, all_cycles
+
+
+def get_areas_crossover(all_paths, all_cycles):
+    areas = []
+    for p, c in zip(all_paths, all_cycles):  # O(len(all_paths))
+        for s_idx, e_list in c.iteritems():  # O(unique start nodes)
+            for e_idx in e_list:  # O(unique start to end)
+                coordinates = [decode_vertex(x) for x in p[s_idx, e_idx]]
 
 
 def get_areas(all_paths, all_cycles):

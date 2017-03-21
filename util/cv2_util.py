@@ -1,34 +1,112 @@
 import numpy as np
 import cv2
-from image_algorithm.util.img_util import encode_vertex, max_x, max_y, expand_search_range
+from image_algorithm.util.img_util import encode_vertex, max_x, max_y, \
+    expand_search_range
+
+
+def read_image(img, convert_grey=False):
+    if isinstance(img, str):
+        img = cv2.imread(img)
+    if convert_grey:
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    return img
+
+
+def image_subtract(img, bg):
+    return cv2.absdiff(img, bg)
+
+
+def remove_background(img, e1, e2):
+    diff1 = cv2.absdiff(img, e1)
+    diff2 = cv2.absdiff(img, e2)
+    return cv2.bitwise_and(diff1, diff2)
 
 
 def find_straight_lines(img, plot=False):
     """
 
     :param img:
-    :param min_length:
+    :param plot:
     :return:
     :usage:
-        >>> img = 'd:/pictures/fydp/nudes3/3l_covered.jpg'
-        >>> line_segments = find_straight_lines(img)
+        >>> img = 'd:/google drive/fydp/images/img_sub test/1l_0.jpg'
+        >>> img_ls = find_straight_lines(img, plot=True)
+        >>> empty = 'd:/google drive/fydp/images/img_sub test/empty_0.jpg'
+        >>> empty_ls = find_straight_lines(empty, plot=True)
     """
     if isinstance(img, str):
         img = cv2.imread(img)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    edges = cv2.Canny(img, 20, 150)
-    kwargs = {'rho': 0.01, 'theta': np.pi / 500, 'threshold': 3,
-              'maxLineGap': 100}
+    edges = cv2.Canny(img, 10, 150)
+    kwargs = {'rho': 0.1, 'theta': np.pi / 512, 'threshold': 5,
+              'maxLineGap': 50, 'minLineLength': 50}
     line_segments = cv2.HoughLinesP(edges, **kwargs)
     if plot:
+        assert line_segments is not None, 'No line segements found'
         a, b, c = line_segments.shape
         for i in range(a):
             x1, y1, x2, y2 = line_segments[i][0]
             cv2.line(img, (x1, y1), (x2, y2), (0, 0, 255), 1, cv2.LINE_AA)
-        cv2.imshow('lines', img)
+        cv2.imshow('img', img)
 
     line_segments = [x[0].tolist() for x in line_segments]
     return line_segments
+
+
+def mask_shapes(img, plot=False):
+    if isinstance(img, str):
+        img = read_image(img)
+    shape_mask = cv2.inRange(img, 0, np.mean(img))
+    shape_mask = 255 - shape_mask
+    if plot:
+        cv2.namedWindow('mask', 1)
+        cv2.imshow('mask', shape_mask)
+    return shape_mask
+
+
+def find_shapes(img):
+    if isinstance(img, str):
+        img = read_image(img)
+    tmp = cv2.findContours(img.copy(), cv2.RETR_EXTERNAL,
+                           cv2.CHAIN_APPROX_SIMPLE)
+    contours = tmp[1]
+    x, y = img.shape
+    max_area = (x - 1) * (y - 1)  # Using this for cv2 moments area
+    areas = []
+    for c in contours:
+        moment = cv2.moments(c)
+        area = moment['m00']
+        shape = detect_shape(c)
+        print shape, area
+        if area < max_area:
+            areas.append(int(area))
+        cv2.drawContours(img, [c], 0, (0, 0, 0), thickness=3)
+    cv2.namedWindow('img', 1)
+    cv2.imshow('img', img)
+    return areas
+
+
+def detect_shape(c):
+    shape = None
+
+    # Approximate contour and then the number of points
+    peri = cv2.arcLength(c, True)
+    approx = cv2.approxPolyDP(c, 0.04 * peri, True)
+
+    if len(approx) == 3:
+        shape = "triangle"
+    # Square or Rectangle
+    elif len(approx) == 4:
+        shape = 'rectangle'
+    elif len(approx) == 5:
+        shape = 'pentagon'
+    elif len(approx) == 6:
+        shape = 'hexagon'
+    else:
+        shape = 'circle'
+
+    # return the name of the shape
+    return shape
 
 
 def convert_graph(line_segments):
@@ -152,24 +230,7 @@ def bresenham_line_algorithm(line_segments):
         x0, y0, x1, y1 = ls
         points = get_line((x0, y0), (x1, y1))
         for a, b in points:
-            matrix[b][a] = 1
-        # matrix = bresenham_line(matrix, *ls)
-        # x1, y1, x2, y2 = ls
-        # dx, dy = x2 - x1, y2 - y1
-        # abs_dx, abs_dy = abs(dx), abs(dy)  # absolute value
-        # sx = 0 if dx == 0 else dx / abs_dx
-        # sy = 0 if dy == 0 else dy / abs_dy
-        # e = abs_dx - abs_dy
-        # while x1 != x2 or y1 != y2:
-        #     if (0 <= x1 < max_x) and (0 <= y1 < max_y):
-        #         matrix[y1][x1] = 1
-        #     e2 = e * 2
-        #     if e2 > -abs_dy:
-        #         e -= abs_dy
-        #         x1 += sx
-        #     if e2 < abs_dx:
-        #         e += dx
-        #         y1 += sy
+            matrix[a][b] = 1
     return matrix
 
 
@@ -186,7 +247,7 @@ def cycle_traverse(start_vertex, edges):
     paths, cycles, prev_map = [], [], {}  # Returned variables
     while stack:  # Stack is not empty
         v1 = stack.pop()
-        adjacent = expand_search_range(edges.get(v1, None), sweep_range=50)
+        adjacent = expand_search_range(edges.get(v1, None), sweep_range=80)
         prev = path[-1] if len(path) > 0 else -1  # O(1)
         if prev > 0 and prev not in adjacent:
             # The previous path is finished and we continue to the next one
@@ -225,7 +286,7 @@ def find_cycles(vertices, edges):
     :param edges:
     :return:
     :usage:
-        >>> img = 'd:/pictures/fydp/nudes3/1b3l_covered.jpg'
+        >>> img = 'd:/google drive/fydp/images/img_sub test/1l_0.jpg'
         >>> line_segments = find_straight_lines(img)
         >>> vertices, edges = convert_graph(line_segments)
         >>> all_paths, all_cycles = find_cycles(vertices, edges)
