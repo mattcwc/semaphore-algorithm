@@ -17,7 +17,7 @@ def run_algorithm_old(img, e1, e2):
         >>> e1 = 'd:/google drive/fydp/images/calibrate/calibrate_0.jpg'
         >>> e2 = 'd:/google drive/fydp/images/calibrate/calibrate_1.jpg'
         >>> img = 'd:/google drive/fydp/images/1box_1letter = 2 letters .jpg'
-        >>> run_algorithm(img, e1, e2)
+        >>> run_algorithm_old(img, e1, e2)
     """
     img = read_image(img, True)
     e1 = read_image(e1, True)
@@ -61,11 +61,16 @@ def run_algorithm(img, empty):
     areas = pd.Series(get_areas(all_paths, all_cycles)).unique()
     object_areas = find_objects(areas)
     object_dict = get_objects(object_areas)
-    print object_dict
 
     # Pseudo-normalization of result
     div = float(sum(object_dict.values())) / 2  # only supports 2 items for now
     if div > 1:  # Don't want to increase the number of items
         object_dict = {k: int(round(v / div)) for k, v in
                        object_dict.iteritems()}
+
+    # Check if it's only letters that have values. Empirical tests show that
+    # mailboxes with only letters tend to produce double the amount.
+    i = iter(object_dict.values())
+    if any(i) and not any(i) and object_dict.get('letters') > 0:
+        object_dict['letters'] /= 2
     return object_dict
