@@ -48,7 +48,7 @@ Run `pip install -r requirements.txt` from root folder
 
 ## License
 
-Distributed under the GNU GPLv3 license. See [LICENSE](https://github.com/mattcwc/semaphore-raspi/blob/master/LICENSE) for more information.
+Distributed under the GNU GPLv3 license. See [LICENSE](https://github.com/mattcwc/semaphore-algorithm/blob/master/LICENSE) for more information.
 
 Libraries are used under the [BSD License](https://opensource.org/licenses/BSD-3-Clause) and the [Python Software Foundation License](https://docs.python.org/3/license.html).
 
