@@ -39,8 +39,6 @@ Run `pip install -r requirements.txt` from root folder
 
 
 ## Acknowledgments
-* [Armin Ronacher](http://lucumr.pocoo.org/about/) - [Flask](http://flask.pocoo.org/)
-* [Ozgur Vatansever](https://github.com/ozgur) - [Python-firebase](http://ozgur.github.io/python-firebase/)
 * OpenCV Dev Team - [opencv-python](http://docs.opencv.org/3.0-beta/)
 * NumPy Developers - [NumPy](http://www.numpy.org/)
 * PyData Development Team - [pandas](http://pandas.pydata.org/)
@@ -52,18 +50,14 @@ Run `pip install -r requirements.txt` from root folder
 
 Distributed under the GNU GPLv3 license. See [LICENSE](https://github.com/mattcwc/semaphore-raspi/blob/master/LICENSE) for more information.
 
-Libraries are used under the [BSD License](https://opensource.org/licenses/BSD-3-Clause), the [MIT License](https://opensource.org/licenses/MIT) and the [Python Software Foundation License](https://docs.python.org/3/license.html).
+Libraries are used under the [BSD License](https://opensource.org/licenses/BSD-3-Clause) and the [Python Software Foundation License](https://docs.python.org/3/license.html).
 
 ### BSD License
-* [Flask](http://flask.pocoo.org/)
 * [opencv-python](http://docs.opencv.org/3.0-beta/index.html)
 * [NumPy](http://www.numpy.org/)
 * [pandas](http://pandas.pydata.org/)
 * [scikit-image](http://scikit-image.org/)
 * [SciPy](https://www.scipy.org/)
-
-### MIT License
-* [Python-firebase](http://ozgur.github.io/python-firebase/)
 
 ### Python Software Foundation License
 * [matplotlib](http://matplotlib.org/)
