@@ -1,3 +1,14 @@
+"""
+ Semaphore - Image Processing Algorithm
+ Image Processing Algorithm component of Semaphore
+ See https://shlchoi.github.io/semaphore/ for more information about Semaphore
+
+ math_func.py
+ Copyright (C) 2017 Matthew Chum, Samson H. Choi
+
+ See https://github.com/mattcwc/semaphore-raspi/blob/master/LICENSE for license information
+ """
+
 from itertools import tee
 
 

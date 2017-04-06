@@ -1,3 +1,14 @@
+"""
+ Semaphore - Image Processing Algorithm
+ Image Processing Algorithm component of Semaphore
+ See https://shlchoi.github.io/semaphore/ for more information about Semaphore
+
+ main.py
+ Copyright (C) 2017 Matthew Chum, Samson H. Choi
+
+ See https://github.com/mattcwc/semaphore-raspi/blob/master/LICENSE for license information
+ """
+
 from image_algorithm.util.img_util import get_areas, get_all_edges, \
     find_all_cycles
 from image_algorithm.util.fuzzy_logic import get_objects, find_objects

@@ -1,3 +1,14 @@
+"""
+ Semaphore - Image Processing Algorithm
+ Image Processing Algorithm component of Semaphore
+ See https://shlchoi.github.io/semaphore/ for more information about Semaphore
+
+ img_util.py
+ Copyright (C) 2017 Matthew Chum, Samson H. Choi
+
+ See https://github.com/mattcwc/semaphore-raspi/blob/master/LICENSE for license information
+ """
+
 from image_algorithm.util.math_func import matrix_min, area_in_cycle
 from copy import deepcopy
 import numpy as np

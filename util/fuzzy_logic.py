@@ -1,3 +1,14 @@
+"""
+ Semaphore - Image Processing Algorithm
+ Image Processing Algorithm component of Semaphore
+ See https://shlchoi.github.io/semaphore/ for more information about Semaphore
+
+ fuzzy_logic.py
+ Copyright (C) 2017 Matthew Chum
+
+ See https://github.com/mattcwc/semaphore-raspi/blob/master/LICENSE for license information
+ """
+
 import numpy as np
 import pandas as pd
 

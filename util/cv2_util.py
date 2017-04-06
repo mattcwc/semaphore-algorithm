@@ -1,3 +1,14 @@
+"""
+ Semaphore - Image Processing Algorithm
+ Image Processing Algorithm component of Semaphore
+ See https://shlchoi.github.io/semaphore/ for more information about Semaphore
+
+ cv2_util.py
+ Copyright (C) 2017 Matthew Chum, Samson H. Choi
+
+ See https://github.com/mattcwc/semaphore-raspi/blob/master/LICENSE for license information
+ """
+
 import numpy as np
 import cv2
 from image_algorithm.util.img_util import encode_vertex, max_x, max_y, \
