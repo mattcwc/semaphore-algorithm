@@ -21,15 +21,12 @@ See the [main project page](https://shlchoi.github.io/semaphore) for more inform
 Run `pip install -r requirements.txt` from root folder
 
 ## Usage
-|`run_algorithm(img, empty, plot)`                                                  |
-|:--------|:--------------:|:-----:|:-----------------------|:----------------------|
+`run_algorithm(img, empty, plot)`                                                   
 |Parameter|Required/Default|Type   |Description             |Example                |
-|---------|----------------|-------|------------------------|-----------------------|
+|:--------|:--------------:|:-----:|:-----------------------|:----------------------|
 |img      |Required        |string |Path to image file|D:/images/image.jpg          |
-|---------|----------------|-------|------------------------|-----------------------|
 |empty    |Required        |string |Path to empty image file|D:/images/calibrate.jpg|
-|---------|----------------|-------|------------------------|-----------------------|
-|plot     |`false`         |boolean|Display plot			|`true`                 |
+|plot     |`false`         |boolean|Display plot		       	|`true`                 |
 
 
 
